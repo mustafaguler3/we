@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     TAG = "${env.BUILD_NUMBER}"
-                    sh "docker build -t ${IMAGE}:${TAG} ."
+                    sh "sudo docker build -t ${IMAGE}:${TAG} ."
                 }
             }
         }
