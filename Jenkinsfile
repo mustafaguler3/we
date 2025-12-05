@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+                    image 'docker:24-dind'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+    }
 
     tools {
         maven 'maven3'
@@ -24,8 +29,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    TAG = "${env.BUILD_NUMBER}"
-                    sh "sudo docker build -t ${IMAGE}:${TAG} ."
+                    def TAG = "${env.BUILD_NUMBER}"
+                    sh "docker build -t ${IMAGE}:${TAG} ."
                 }
             }
         }
