@@ -10,7 +10,7 @@ pipeline {
     }
 
     stages {
-tools {
+        tools {
             maven 'Maven3'  // Jenkins Tool Configuration'da verdiğin isim
         }
         stage('Build Maven') {
