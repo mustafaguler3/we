@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: spring-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: spring-app
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-app
-          image: mustafaguler4/deneme-service:v7
+          image: mustafaguler4/deneme-service:v8
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

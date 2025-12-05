@@ -1,6 +1,5 @@
 resources:
   - deployment.yaml
   - service.yaml
-images:
-  - name: mustafaguler4/deneme-service
-    newTag: v7
+  - ingress.yaml
+  - mysql-deployment.yaml

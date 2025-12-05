@@ -1,8 +1,5 @@
-namespace: dev
 resources:
   - ../../base
-patchesStrategicMerge:
-  - replicas.yaml
-images:
-  - name: mustafaguler4/deneme-service
-    newTag: "dev-latest"
+patches:
+  - path: replicas.yaml
+  - path: env-patch.yaml

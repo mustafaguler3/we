@@ -1,55 +1,68 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    IMAGE = "mustafaguler4/deneme-service"
-    REGISTRY_CRED = "dockerhub-cred"   // Jenkins'de Credential tanımla
-    GIT_USER = "git-user"
-    GIT_EMAIL = "you@example.com"
-  }
-
-  stages {
-    stage('Build') {
-      steps {
-        sh 'mvn -B -DskipTests clean package'
-      }
+    environment {
+        IMAGE = "mustafaguler4/deneme-service"
+        REGISTRY = "docker.io"
+        DOCKER_CREDENTIAL = "dockerhub-cred"   // Jenkins Credentials
+        GIT_EMAIL = "you@example.com"
+        GIT_NAME = "Mustafa Guler"
     }
 
-    stage('Docker Build & Push') {
-      steps {
-        script {
-          def tag = "${env.BUILD_NUMBER}"
-          sh "docker build -t ${IMAGE}:${tag} ."
-          withCredentials([usernamePassword(credentialsId: REGISTRY_CRED, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-            sh "echo $PASS | docker login -u $USER --password-stdin"
-          }
-          sh "docker push ${IMAGE}:${tag}"
+    stages {
+
+        stage('Build Maven') {
+            steps {
+                sh 'mvn -DskipTests clean package'
+            }
         }
-      }
-    }
 
-    stage('Update kustomize overlay (dev)') {
-      steps {
-        script {
-          def tag = "${env.BUILD_NUMBER}"
-          sh """
-            git config user.email "${GIT_EMAIL}"
-            git config user.name "${GIT_USER}"
-            git checkout -b jenkins/update-${tag}
-            # Replace tag in overlay (sed for Linux/mac with compatible sed)
-            sed -i "s|newTag: .*|newTag: \\"${tag}\\"|g" k8s/overlays/dev/kustomization.yaml || true
-            git add k8s/overlays/dev/kustomization.yaml
-            git commit -m "ci: update dev image to ${tag}"
-            git push origin HEAD
-          """
+        stage('Docker Build') {
+            steps {
+                script {
+                    TAG = "${env.BUILD_NUMBER}"
+                    sh "docker build -t ${IMAGE}:${TAG} ."
+                }
+            }
         }
-      }
-    }
-  }
 
-  post {
-    failure {
-      emailext subject: "Build failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}", to: 'you@example.com'
+        stage('Docker Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: DOCKER_CREDENTIAL,
+                        usernameVariable: 'USER',
+                        passwordVariable: 'PASS'
+                    )]) {
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                    }
+                    sh "docker push ${IMAGE}:${TAG}"
+                }
+            }
+        }
+
+        stage('Update Kustomize Overlay') {
+            steps {
+                script {
+                    sh """
+                       git config user.email "${GIT_EMAIL}"
+                       git config user.name "${GIT_NAME}"
+                       sed -i "s/newTag:.*/newTag: ${TAG}/" k8s/overlays/dev/kustomization.yaml
+                       git add k8s/overlays/dev/kustomization.yaml
+                       git commit -m "CI: Update dev image to ${TAG}"
+                       git push origin HEAD:main
+                    """
+                }
+            }
+        }
     }
-  }
+
+    post {
+        success {
+            echo "CI/CD Pipeline Completed Successfully"
+        }
+        failure {
+            echo "Pipeline Failed"
+        }
+    }
 }

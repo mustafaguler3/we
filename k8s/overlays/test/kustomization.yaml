@@ -1,0 +1,6 @@
+resources:
+  - ../../base
+patches:
+  - path: replicas.yaml
+  - path: env-patch.yaml
+namePrefix: test-
