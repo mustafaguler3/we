@@ -63,6 +63,15 @@ pipeline {
         }
     }
 
+    stage('ArgoCD Sync') {
+        steps {
+            sh """
+            argocd login localhost:8080 --username admin --password e3J1VlrjnkiE1DND --insecure
+            argocd app sync deneme-service
+            """
+        }
+    }
+
     post {
         success { echo "CI/CD Pipeline Completed Successfully" }
         failure { echo "Pipeline Failed" }
