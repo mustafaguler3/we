@@ -21,14 +21,26 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Docker Build') {
             steps {
                 script {
                     def TAG = "${env.BUILD_NUMBER}"
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-cred') {
-                        def app = docker.build("${IMAGE}:${TAG}")
-                        app.push()
+                    sh "docker build -t ${IMAGE}:${TAG} ."
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: DOCKER_CREDENTIAL,
+                        usernameVariable: 'USER',
+                        passwordVariable: 'PASS'
+                    )]) {
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
                     }
+                    sh "docker push ${IMAGE}:${TAG}"
                 }
             }
         }
