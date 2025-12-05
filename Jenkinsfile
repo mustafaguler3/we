@@ -1,18 +1,20 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'   // Global Tool Configuration'daki isim küçük harf ile
+    }
+
     environment {
         IMAGE = "mustafaguler4/deneme-service"
         REGISTRY = "docker.io"
-        DOCKER_CREDENTIAL = "dockerhub-cred"   // Jenkins Credentials
+        DOCKER_CREDENTIAL = "dockerhub-cred"
         GIT_EMAIL = "you@example.com"
         GIT_NAME = "Mustafa Guler"
     }
 
     stages {
-        tools {
-            maven 'Maven3'  // Jenkins Tool Configuration'da verdiğin isim
-        }
+
         stage('Build Maven') {
             steps {
                 sh 'mvn -DskipTests clean package'
@@ -46,28 +48,28 @@ pipeline {
         stage('Update Kustomize Overlay') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                            sh """
-                              git config user.email "${GIT_EMAIL}"
-                              git config user.name "${GIT_NAME}"
-                              git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/mustafaguler3/we.git
-                              sed -i "s/newTag:.*/newTag: ${TAG}/" k8s/overlays/dev/kustomization.yaml
-                              git add k8s/overlays/dev/kustomization.yaml
-                              git commit -m "CI: Update dev image to ${TAG}" || echo "no changes to commit"
-                              git push origin HEAD:master
-                            """
-                          }
+                    withCredentials([usernamePassword(
+                        credentialsId: 'github-cred',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_PASS'
+                    )]) {
+                        sh """
+                          git config user.email "${GIT_EMAIL}"
+                          git config user.name "${GIT_NAME}"
+                          git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/mustafaguler3/we.git
+                          sed -i "s/newTag:.*/newTag: ${TAG}/" k8s/overlays/dev/kustomization.yaml
+                          git add k8s/overlays/dev/kustomization.yaml
+                          git commit -m "CI: Update dev image to ${TAG}" || echo "no changes to commit"
+                          git push origin HEAD:master
+                        """
+                    }
                 }
             }
         }
     }
 
     post {
-        success {
-            echo "CI/CD Pipeline Completed Successfully"
-        }
-        failure {
-            echo "Pipeline Failed"
-        }
+        success { echo "CI/CD Pipeline Completed Successfully" }
+        failure { echo "Pipeline Failed" }
     }
 }
