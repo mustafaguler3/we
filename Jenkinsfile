@@ -44,7 +44,6 @@ pipeline {
                 }
             }
         }
-
         stage('Update Kustomize Overlay') {
             steps {
                 script {
