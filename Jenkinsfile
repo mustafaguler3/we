@@ -1,6 +1,17 @@
 pipeline {
     agent any
 
+    tools {
+            maven 'Maven3'  // Jenkins Tool Configuration'da verdiğin isim
+        }
+        stages {
+            stage('Build') {
+                steps {
+                    sh 'mvn -DskipTests clean package'
+                }
+            }
+        }
+
     environment {
         IMAGE = "mustafaguler4/deneme-service"
         REGISTRY = "docker.io"
