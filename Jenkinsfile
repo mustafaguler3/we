@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         IMAGE = "mustafaguler4/deneme-service"
+        TAG = "${env.BUILD_NUMBER}"
         REGISTRY = "docker.io"
         DOCKER_CREDENTIAL = "dockerhub-cred"
         GIT_EMAIL = "you@example.com"
@@ -23,26 +24,21 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                script {
-                    def TAG = "${env.BUILD_NUMBER}"
-                    sh "docker build -t ${IMAGE}:${TAG} ."
-                }
+                sh "docker build -t ${IMAGE}:${TAG} ."
             }
         }
         stage('Docker Push') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(
-                        credentialsId: DOCKER_CREDENTIAL,
-                        usernameVariable: 'USER',
-                        passwordVariable: 'PASS'
-                    )]) {
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                    steps {
+                        withCredentials([usernamePassword(
+                            credentialsId: DOCKER_CREDENTIAL,
+                            usernameVariable: 'USER',
+                            passwordVariable: 'PASS'
+                        )]) {
+                            sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                        }
+                        sh "docker push ${IMAGE}:${TAG}"
                     }
-                    sh "docker push ${IMAGE}:${TAG}"
                 }
-            }
-        }
 
         stage('Update Kustomize Overlay') {
             steps {
