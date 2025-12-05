@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven3'   // Global Tool Configuration'daki isim küçük harf ile
+        maven 'maven3'
     }
 
     environment {
