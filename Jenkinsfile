@@ -61,7 +61,6 @@ pipeline {
                 }
             }
         }
-
         stage('ArgoCD Sync') {
                 steps {
                     sh """
