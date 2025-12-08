@@ -74,7 +74,6 @@ pipeline {
         }
     }
 
-
     post {
         success { echo "CI/CD Pipeline Completed Successfully" }
         failure { echo "Pipeline Failed" }
