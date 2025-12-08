@@ -61,15 +61,17 @@ pipeline {
                 }
             }
         }
+
         stage('ArgoCD Sync') {
-                steps {
+            steps {
+                withCredentials([string(credentialsId: 'argocd-pass', variable: 'ARGO_PASS')]) {
                     sh """
-                    argocd login localhost:8080 --username admin --password e3J1VlrjnkiE1DND --insecure
-                    argocd app sync deneme-service
+                        /usr/local/bin/argocd login localhost:8080 --username admin --password $ARGO_PASS --insecure
+                        /usr/local/bin/argocd app sync deneme-service
                     """
                 }
             }
-    }
+        }
 
 
 
