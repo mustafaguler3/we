@@ -1,6 +1,5 @@
 resources:
   - ../../base
-  - spring-ingress.yaml
 patches:
   - path: replicas.yaml
   - path: env-patch.yaml
