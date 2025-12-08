@@ -3,3 +3,4 @@ resources:
 patches:
   - path: replicas.yaml
   - path: env-patch.yaml
+namespace: dev

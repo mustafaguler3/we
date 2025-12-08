@@ -3,4 +3,4 @@ resources:
 patches:
   - path: replicas.yaml
   - path: env-patch.yaml
-namePrefix: prod-
+namespace: prod
