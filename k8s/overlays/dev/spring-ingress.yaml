@@ -1,3 +1,7 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-ingress
 spec:
   rules:
     - host: dev.spring.test
