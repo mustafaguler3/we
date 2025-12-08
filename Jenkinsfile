@@ -65,10 +65,12 @@ pipeline {
         stage('ArgoCD Sync') {
             steps {
                 withCredentials([string(credentialsId: 'argocd-pass', variable: 'ARGO_PASS')]) {
-                    sh """
-                        /usr/local/bin/argocd login localhost:8080 --username admin --password $ARGO_PASS --insecure
-                        /usr/local/bin/argocd app sync deneme-service
-                    """
+                    sh '''
+                    /usr/local/bin/argocd app terminate-op deneme-service || true
+                    '''
+                    sh '''
+                    /usr/local/bin/argocd app sync deneme-service
+                    '''
                 }
             }
         }
