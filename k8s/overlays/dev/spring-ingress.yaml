@@ -1,0 +1,12 @@
+spec:
+  rules:
+    - host: dev.spring.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spring-service
+                port:
+                  number: 80
