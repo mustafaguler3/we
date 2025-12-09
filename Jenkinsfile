@@ -67,7 +67,11 @@ pipeline {
             SONARQUBE = credentials('sonar-token-id')
           }
           steps {
-            sh "mvn sonar:sonar -Dsonar.host.url=http://sonar:9000 -Dsonar.login=${SONARQUBE}"
+            sh '''
+            mvn sonar:sonar \
+              -Dsonar.host.url=http://localhost:9000 \
+              -Dsonar.login=$SONARQUBE
+            '''
           }
         }
         stage('Quality Gate') {
