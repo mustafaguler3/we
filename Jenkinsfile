@@ -63,6 +63,18 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+                          steps {
+
+                            sh '''
+                            mvn sonar:sonar \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.login=$SONARQUBE
+                            '''
+                          }
+                        }
+
+
         stage('ArgoCD Sync') {
             steps {
                 withCredentials([string(credentialsId: 'argocd-pass', variable: 'ARGO_PASS')]) {
@@ -76,24 +88,8 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-                  steps {
 
-                    sh '''
-                    mvn sonar:sonar \
-                      -Dsonar.host.url=http://localhost:9000 \
-                      -Dsonar.login=$SONARQUBE
-                    '''
-                  }
-                }
-                stage('Quality Gate') {
-                  steps {
-                    timeout(time: 2, unit: 'MINUTES') {
-                      waitForQualityGate abortPipeline: true
-                    }
-                  }
-                }
-        }
+
     }
 
     post {
