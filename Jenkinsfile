@@ -12,6 +12,7 @@ pipeline {
         DOCKER_CREDENTIAL = "dockerhub-cred"
         GIT_EMAIL = "you@example.com"
         GIT_NAME = "Mustafa Guler"
+        SONARQUBE = credentials('sonar-token-id')
     }
 
     stages {
@@ -63,10 +64,10 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-          environment {
-            SONARQUBE = credentials('sonar-token-id')
-          }
           steps {
+          timeout(time: 2, unit: 'MINUTES') {
+                waitForQualityGate abortPipeline: true
+              }
             sh '''
             mvn sonar:sonar \
               -Dsonar.host.url=http://localhost:9000 \
